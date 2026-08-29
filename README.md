@@ -1,14 +1,12 @@
 # ios-glass-notifications
 
-Lab playground: iOS 26 liquid-glass Slack notification stack, following the [Motion notifications stack](https://motion.dev/examples/react-notifications-stack) variant pattern. Four Summary banners.
+Lab playground: iOS liquid-glass Slack stack using the [Motion notifications stack](https://motion.dev/examples/react-notifications-stack) variants.
 
-Click the stack (or anywhere on the frame) to expand and collapse.
-
-Open `preview.html` locally — one self-contained file, no build. The Vite app is the same stack.
+Open `preview.html` — it bundles real Motion (IIFE), no npm. Or:
 
 ```bash
 npm install
 npm run dev
 ```
 
-`npm run build` writes a static `dist/` for preview or a sibling Railway deploy.
+Click the stack to expand and collapse. `npm run build` writes `dist/` and regenerates `preview.html`.

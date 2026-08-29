@@ -1,28 +1,27 @@
 import { MotionConfig, motion, useReducedMotion } from "motion/react"
 import { useState } from "react"
+import slackMark from "./slack.svg"
 
-const N_NOTIFICATIONS = 4
-const NOTIFICATION_HEIGHT = 80
+const N_NOTIFICATIONS = 3
+const NOTIFICATION_HEIGHT = 60
 const NOTIFICATION_WIDTH = 360
 const NOTIFICATION_GAP = 8
-const Y_TUCK = 16
-
-const SPRING = {
-  type: "spring",
-  visualDuration: 0.4,
-  bounce: 0.15,
-}
 
 const NOTIFICATIONS = [
   "284 conversations handled today. Only 8 escalations.",
   "Refunds processed. Customer for order #6612 left a 5 star review on Trustpilot.",
-  "11 enterprise leads qualified. First demo is booked for 10am tmr.",
   "Everything's handled. Enjoy the movie.",
 ]
 
 const stackVariants = {
-  open: {},
-  closed: {},
+  open: {
+    y: 20,
+    scale: 0.9,
+  },
+  closed: {
+    y: 0,
+    scale: 1,
+  },
 }
 
 export default function App() {
@@ -45,7 +44,7 @@ function Playground() {
         variants={stackVariants}
         initial={false}
         animate={isOpen ? "open" : "closed"}
-        transition={skip ? { duration: 0 } : SPRING}
+        transition={skip ? { duration: 0 } : { type: "spring", mass: 0.7 }}
         role="button"
         tabIndex={0}
         aria-expanded={isOpen}
@@ -77,10 +76,14 @@ function Notification({ index, body, skip }) {
     open: {
       y: 0,
       scale: 1,
+      opacity: 1,
     },
     closed: {
-      y: -index * (NOTIFICATION_HEIGHT + NOTIFICATION_GAP) + Y_TUCK * index,
-      scale: 1 - index * 0.025,
+      y:
+        -index * (NOTIFICATION_HEIGHT + NOTIFICATION_GAP) -
+        NOTIFICATION_GAP * index,
+      scale: 1 - index * 0.1,
+      opacity: 1 - index * 0.4,
     },
   }
 
@@ -88,14 +91,23 @@ function Notification({ index, body, skip }) {
     <motion.article
       className="banner"
       variants={variants}
-      transition={skip ? { duration: 0 } : SPRING}
+      transition={
+        skip
+          ? { duration: 0 }
+          : {
+              type: "spring",
+              stiffness: 600,
+              damping: 50,
+              delay: index * 0.04,
+            }
+      }
       style={{
         zIndex: N_NOTIFICATIONS - index,
         height: NOTIFICATION_HEIGHT,
         width: NOTIFICATION_WIDTH,
       }}
     >
-      <img className="icon" src="/slack.svg" width={38} height={38} alt="" />
+      <img className="icon" src={slackMark} width={32} height={32} alt="" />
       <div className="copy">
         <div className="row">
           <h2 className="title">Summary</h2>
