@@ -4,6 +4,8 @@ Lab playground: iOS 26 liquid-glass Slack notification stack, following the [Mot
 
 Click the stack (or anywhere on the frame) to expand and collapse.
 
+Open `preview.html` locally — one self-contained file, no build. The Vite app is the same stack.
+
 ```bash
 npm install
 npm run dev

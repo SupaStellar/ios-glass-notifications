@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iOS glass notifications</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+          "Segoe UI", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        height: 100%;
+        background: #00ff00;
+        overflow: hidden;
+      }
+
+      .stage {
+        display: grid;
+        place-items: center;
+        min-height: 100dvh;
+        width: 100%;
+        background: #00ff00;
+        cursor: pointer;
+      }
+
+      .stack {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        outline: none;
+      }
+
+      .stack:focus-visible {
+        outline: 2px solid rgba(0, 0, 0, 0.35);
+        outline-offset: 10px;
+        border-radius: 28px;
+      }
+
+      .banner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 360px;
+        height: 80px;
+        padding: 12px 14px;
+        border-radius: 24px;
+        color: #fff;
+        user-select: none;
+        transform-origin: top center;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.14) 0%,
+          rgba(36, 30, 28, 0.42) 14%,
+          rgba(22, 18, 16, 0.5) 100%
+        );
+        backdrop-filter: blur(28px) saturate(1.7);
+        -webkit-backdrop-filter: blur(28px) saturate(1.7);
+        border: 0.6px solid rgba(255, 255, 255, 0.2);
+        box-shadow:
+          0 18px 40px rgba(0, 0, 0, 0.38),
+          0 4px 14px rgba(0, 0, 0, 0.28),
+          inset 0 0.6px 0 rgba(255, 255, 255, 0.22),
+          inset 0.6px 0 0 rgba(255, 255, 255, 0.1);
+        transition: transform 480ms cubic-bezier(0.22, 1.18, 0.36, 1);
+      }
+
+      .icon {
+        flex: 0 0 38px;
+        width: 38px;
+        height: 38px;
+        display: block;
+      }
+
+      .copy {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
+      }
+
+      .time {
+        flex: 0 0 auto;
+        font-size: 13px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .body {
+        margin: 3px 0 0;
+        font-size: 14.5px;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+        line-height: 1.25;
+        color: rgba(255, 255, 255, 0.94);
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .banner {
+          transition-duration: 0s;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="stage" id="stage">
+      <div
+        class="stack"
+        id="stack"
+        role="button"
+        tabindex="0"
+        aria-expanded="false"
+        aria-label="Expand notification stack"
+      ></div>
+    </main>
+    <script>
+      var N = 4
+      var HEIGHT = 80
+      var GAP = 8
+      var TUCK = 16
+      var BODIES = [
+        "284 conversations handled today. Only 8 escalations.",
+        "Refunds processed. Customer for order #6612 left a 5 star review on Trustpilot.",
+        "11 enterprise leads qualified. First demo is booked for 10am tmr.",
+        "Everything's handled. Enjoy the movie.",
+      ]
+      var SLACK =
+        '<svg class="icon" width="38" height="38" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<path fill-rule="evenodd" clip-rule="evenodd" d="M0 24C0 10.7452 10.7452 0 24 0H64C77.2548 0 88 10.7452 88 24V64C88 77.2548 77.2548 88 64 88H24C10.7452 88 0 77.2548 0 64V24Z" fill="white"/>' +
+        '<path d="M68.1986 41.5474C71.4735 41.5474 74.1284 38.8926 74.1284 35.6177C74.1284 32.3429 71.4733 29.6881 68.1984 29.6881C64.9232 29.6881 62.2678 32.3431 62.2678 35.6182C62.2678 38.8928 64.9241 41.5474 68.1986 41.5474ZM51.5933 41.5474C54.8685 41.5474 57.5236 38.8923 57.5236 35.6172V19.0137C57.5236 15.7386 54.8685 13.0836 51.5933 13.0836C48.3181 13.0836 45.6631 15.7386 45.6631 19.0138V35.6172C45.6631 38.8924 48.3181 41.5474 51.5933 41.5474Z" fill="#2EB67D"/>' +
+        '<path d="M18.3829 46.2914C15.108 46.2914 12.4531 48.9462 12.4531 52.2211C12.4531 55.4959 15.1082 58.1507 18.3831 58.1507C21.6583 58.1507 24.3137 55.4957 24.3137 52.2205C24.3137 48.946 21.6575 46.2914 18.3829 46.2914ZM34.9882 46.2914C31.713 46.2914 29.0579 48.9464 29.0579 52.2216V68.825C29.0579 72.1002 31.713 74.7552 34.9882 74.7552C38.2634 74.7552 40.9184 72.1002 40.9184 68.825V52.2216C40.9184 48.9464 38.2634 46.2914 34.9882 46.2914Z" fill="#E01E5A"/>' +
+        '<path d="M45.6631 68.8276C45.6631 72.1025 48.3179 74.7573 51.5928 74.7573C54.8678 74.7573 57.5226 72.1022 57.5226 68.8274C57.5226 65.5522 54.8675 62.897 51.5923 62.897C48.3177 62.897 45.6631 65.553 45.6631 68.8276ZM45.6631 52.2227C45.6631 55.4978 48.3182 58.1528 51.5934 58.1528H68.1971C71.4723 58.1528 74.1274 55.4978 74.1274 52.2227C74.1274 48.9475 71.4723 46.2925 68.1971 46.2925H51.5934C48.3182 46.2925 45.6631 48.9475 45.6631 52.2227Z" fill="#ECB22E"/>' +
+        '<path d="M40.9184 19.0117C40.9184 15.7368 38.2636 13.082 34.9887 13.082C31.7137 13.082 29.0589 15.7371 29.0589 19.0119C29.0589 22.2871 31.714 24.9424 34.9892 24.9424C38.2638 24.9424 40.9184 22.2863 40.9184 19.0117ZM40.9184 35.6167C40.9184 32.3415 38.2634 29.6865 34.9882 29.6865H18.3844C15.1092 29.6865 12.4541 32.3415 12.4541 35.6167C12.4541 38.8918 15.1092 41.5468 18.3844 41.5468H34.9882C38.2634 41.5468 40.9184 38.8918 40.9184 35.6167Z" fill="#36C5F0"/>' +
+        "</svg>"
+
+      var stage = document.getElementById("stage")
+      var stack = document.getElementById("stack")
+      var open = false
+
+      BODIES.forEach(function (body, index) {
+        var article = document.createElement("article")
+        article.className = "banner"
+        article.style.zIndex = String(N - index)
+        article.innerHTML =
+          SLACK +
+          '<div class="copy">' +
+          '<div class="row"><h2 class="title">Summary</h2><time class="time">now</time></div>' +
+          '<p class="body"></p>' +
+          "</div>"
+        article.querySelector(".body").textContent = body
+        stack.appendChild(article)
+      })
+
+      var banners = stack.querySelectorAll(".banner")
+
+      function park(isOpen) {
+        for (var i = 0; i < banners.length; i++) {
+          var y = isOpen ? 0 : -i * (HEIGHT + GAP) + TUCK * i
+          var scale = isOpen ? 1 : 1 - i * 0.025
+          banners[i].style.transform = "translateY(" + y + "px) scale(" + scale + ")"
+        }
+        stack.setAttribute("aria-expanded", isOpen ? "true" : "false")
+        stack.setAttribute(
+          "aria-label",
+          isOpen ? "Collapse notification stack" : "Expand notification stack"
+        )
+      }
+
+      function toggle() {
+        open = !open
+        park(open)
+      }
+
+      park(false)
+      stage.addEventListener("click", toggle)
+      stack.addEventListener("click", function (event) {
+        event.stopPropagation()
+        toggle()
+      })
+      stack.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          toggle()
+        }
+      })
+    </script>
+  </body>
+</html>

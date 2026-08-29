@@ -40,7 +40,6 @@ function Playground() {
 
   return (
     <main className="stage" onClick={() => setIsOpen((open) => !open)}>
-      <div className="cinema" aria-hidden="true" />
       <motion.div
         className="stack"
         variants={stackVariants}

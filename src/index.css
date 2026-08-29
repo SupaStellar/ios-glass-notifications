@@ -20,40 +20,18 @@ body,
 }
 
 body {
-  background: #0a0706;
+  background: #00ff00;
   overflow: hidden;
 }
 
 .stage {
   position: relative;
-  isolation: isolate;
   display: grid;
   place-items: center;
   min-height: 100dvh;
   width: 100%;
-  overflow: hidden;
+  background: #00ff00;
   cursor: pointer;
-}
-
-.cinema {
-  position: absolute;
-  inset: -12%;
-  z-index: 0;
-  background-color: #1a100c;
-  background-image: url("/cinema.jpg");
-  background-size: cover;
-  background-position: center 42%;
-  filter: blur(18px) saturate(1.15) brightness(0.72);
-  transform: scale(1.08);
-}
-
-.cinema::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 40%, transparent 0%, rgba(8, 5, 4, 0.35) 70%, rgba(6, 4, 3, 0.72) 100%),
-    linear-gradient(180deg, rgba(20, 10, 6, 0.15), rgba(8, 5, 4, 0.45));
 }
 
 .stack {
@@ -66,7 +44,7 @@ body {
 }
 
 .stack:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline: 2px solid rgba(0, 0, 0, 0.35);
   outline-offset: 10px;
   border-radius: 28px;
 }
@@ -141,10 +119,4 @@ body {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cinema {
-    filter: blur(14px) saturate(1.1) brightness(0.72);
-  }
 }
