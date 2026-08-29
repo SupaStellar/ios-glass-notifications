@@ -1,12 +1,11 @@
 import { MotionConfig, motion, useReducedMotion } from "motion/react"
 import { useState } from "react"
-import { SlackMark } from "./SlackMark.jsx"
 
-const N_NOTIFICATIONS = 3
-const NOTIFICATION_HEIGHT = 68
-const NOTIFICATION_WIDTH = 336
+const N_NOTIFICATIONS = 4
+const NOTIFICATION_HEIGHT = 80
+const NOTIFICATION_WIDTH = 360
 const NOTIFICATION_GAP = 8
-const Y_TUCK = 10
+const Y_TUCK = 16
 
 const SPRING = {
   type: "spring",
@@ -15,21 +14,10 @@ const SPRING = {
 }
 
 const NOTIFICATIONS = [
-  {
-    title: "Summary",
-    time: "now",
-    body: "Everything's handled. Enjoy the movie.",
-  },
-  {
-    title: "#design",
-    time: "2m",
-    body: "Latest glass banners are in the thread.",
-  },
-  {
-    title: "Jarvis",
-    time: "12m",
-    body: "Calendar is clear after 9. You're good.",
-  },
+  "284 conversations handled today. Only 8 escalations.",
+  "Refunds processed. Customer for order #6612 left a 5 star review on Trustpilot.",
+  "11 enterprise leads qualified. First demo is booked for 10am tmr.",
+  "Everything's handled. Enjoy the movie.",
 ]
 
 const stackVariants = {
@@ -51,10 +39,7 @@ function Playground() {
   const skip = Boolean(reduceMotion)
 
   return (
-    <main
-      className="stage"
-      onClick={() => setIsOpen((open) => !open)}
-    >
+    <main className="stage" onClick={() => setIsOpen((open) => !open)}>
       <div className="cinema" aria-hidden="true" />
       <motion.div
         className="stack"
@@ -80,20 +65,15 @@ function Playground() {
           setIsOpen((open) => !open)
         }}
       >
-        {NOTIFICATIONS.map((notification, index) => (
-          <Notification
-            key={notification.title}
-            index={index}
-            notification={notification}
-            skip={skip}
-          />
+        {NOTIFICATIONS.map((body, index) => (
+          <Notification key={body} index={index} body={body} skip={skip} />
         ))}
       </motion.div>
     </main>
   )
 }
 
-function Notification({ index, notification, skip }) {
+function Notification({ index, body, skip }) {
   const variants = {
     open: {
       y: 0,
@@ -101,7 +81,7 @@ function Notification({ index, notification, skip }) {
     },
     closed: {
       y: -index * (NOTIFICATION_HEIGHT + NOTIFICATION_GAP) + Y_TUCK * index,
-      scale: 1 - index * 0.04,
+      scale: 1 - index * 0.025,
     },
   }
 
@@ -116,15 +96,13 @@ function Notification({ index, notification, skip }) {
         width: NOTIFICATION_WIDTH,
       }}
     >
-      <span className="icon">
-        <SlackMark />
-      </span>
+      <img className="icon" src="/slack.svg" width={38} height={38} alt="" />
       <div className="copy">
         <div className="row">
-          <h2 className="title">{notification.title}</h2>
-          <time className="time">{notification.time}</time>
+          <h2 className="title">Summary</h2>
+          <time className="time">now</time>
         </div>
-        <p className="body">{notification.body}</p>
+        <p className="body">{body}</p>
       </div>
     </motion.article>
   )

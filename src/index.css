@@ -100,11 +100,7 @@ body {
   flex: 0 0 38px;
   width: 38px;
   height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  display: block;
 }
 
 .copy {
@@ -141,9 +137,10 @@ body {
   letter-spacing: -0.01em;
   line-height: 1.25;
   color: rgba(255, 255, 255, 0.94);
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 @media (prefers-reduced-motion: reduce) {

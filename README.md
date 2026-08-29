@@ -1,6 +1,6 @@
 # ios-glass-notifications
 
-Lab playground: iOS 26 liquid-glass Slack notification stack, following the [Motion notifications stack](https://motion.dev/examples/react-notifications-stack) variant pattern.
+Lab playground: iOS 26 liquid-glass Slack notification stack, following the [Motion notifications stack](https://motion.dev/examples/react-notifications-stack) variant pattern. Four Summary banners.
 
 Click the stack (or anywhere on the frame) to expand and collapse.
 
